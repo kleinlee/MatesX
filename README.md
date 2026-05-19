@@ -97,7 +97,7 @@ This project does not offer underlying algorithm implementations but focuses on 
 For individual enthusiasts, get free credits on [Matesx official web application](https://www.matesx.com). 
 
 For developers, receive 3 free credits by [contacting us](preview/wechat.jpg). please refer to the [API](preview/API.md) for API calling. 
-Use [matesx.cn](https://www.matesx.cn) to manage your avatars.
+Use [matesx.cn](https://matesx.com/platform.html) to manage your avatars.
 
 ---
 
