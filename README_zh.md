@@ -95,7 +95,7 @@ python main.py
 
 对于个人爱好者，我们会在[matesx网页程序](https://www.matesx.com)定期提供免费额度。
 
-对于开发者，[联系我](preview/wechat.jpg)获取3个免费额度秘钥。请参阅 [API](preview/API.md) 的API付费调用方式，可欢迎使用[matesx.cn](https://www.matesx.cn)来管理你的形象。
+对于开发者，[联系我](preview/wechat.jpg)获取3个免费额度秘钥。请参阅 [API](preview/API.md) 的API付费调用方式，可欢迎使用[matesx platform](https://matesx.com/platform.html)来管理你的形象。
 
 ---
 
