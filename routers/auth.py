@@ -126,7 +126,9 @@ async def handle_new_role2(
     try:
         if not unionid or not avatar_id or not avatar_name:
             raise HTTPException(status_code=400, detail="缺少必要参数")
+        
         avatar_url = ""
+        
         # 插入新记录
         sqlite_manager.insert_or_update_table(
             table_name="roles",
@@ -139,36 +141,74 @@ async def handle_new_role2(
             version=1
         )
 
-        # 异步调用上传接口
+        # 1. 构建OSS URL并上传文件
+        file_ext = os.path.splitext(file.filename.lower())[1]
+        
+        # 构建完整的OSS路径
+        final_task_id = avatar_id
+        if matting:
+            final_task_id += "__alpha"
+        if keepsize:
+            final_task_id += "__keepsize"
+        if not reverse:
+            final_task_id += "__noreverse"
+        final_task_id += "__api"
+        
+        oss_url = f"https://matesx.oss-cn-beijing.aliyuncs.com/avatar/tasks/{final_task_id}{file_ext}"
+        
+        try:
+            # 读取文件内容
+            file_content = await file.read()
+            
+            # 上传文件到OSS
+            async with httpx.AsyncClient(timeout=300.0) as client:
+                oss_response = await client.put(
+                    oss_url,
+                    content=file_content,
+                    headers={
+                        'Content-Type': file.content_type or 'application/octet-stream'
+                    }
+                )
+                
+                if oss_response.status_code != 200:
+                    raise Exception(f"OSS上传失败，状态码: {oss_response.status_code}")
+                    
+        except Exception as oss_error:
+            print(f"OSS上传异常: {str(oss_error)}")
+            sqlite_manager.insert_or_update_table(
+                table_name="roles",
+                avatar_id=avatar_id,
+                unionid=unionid,
+                status="failed",
+                avatar_name=avatar_name,
+                avatar_url=avatar_url,
+                errorMessage=f"OSS上传异常: {str(oss_error)}"
+            )
+            raise HTTPException(status_code=500, detail=f"OSS上传异常: {str(oss_error)}")
+
+        # 2. 调用上传接口（传入oss_url）
         try:
             async with httpx.AsyncClient(timeout=60.0) as client:
-                # 准备表单数据
-                files = {"file": (file.filename, file.file, file.content_type)}
                 data = {
-                    "key": MatesX_key,  # 根据实际需求调整key参数
-                    "matting": str(matting).lower(),
-                    "keepsize": str(keepsize).lower(),
-                    "reverse": str(reverse).lower(),
-                    "task_id": avatar_id
+                    "key": MatesX_key,
+                    "oss_url": oss_url,
+                    "task_id": avatar_id,
+                    "callback_url": ""  # 如果需要回调，可以在这里设置
                 }
 
-                # 发送请求到上传接口
                 upload_response = await client.post(
-                    "https://www.matesx.cn/api/upload",
-                    files=files,
+                    "https://www.matesx.com/platform/api/upload",
                     data=data
                 )
 
-                upload_response.raise_for_status()  # 自动处理HTTP错误
+                upload_response.raise_for_status()
 
-                # 简单的响应检查
                 result = upload_response.json()
                 if result.get("code") != 0:
                     raise Exception(f"上传接口返回错误: {result.get('message', '未知错误')}")
 
         except Exception as upload_error:
             print(f"上传接口调用异常: {str(upload_error)}")
-            # 更新状态为失败
             sqlite_manager.insert_or_update_table(
                 table_name="roles",
                 avatar_id=avatar_id,
