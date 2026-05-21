@@ -5,7 +5,7 @@
 ## 1. 获取账户信息
 说明: 通过密钥获取用户任务信息和余额
 
-接口地址: POST www.matesx.cn/api/confirm
+接口地址: POST www.matesx.com/platform/api/confirm
 
 请求头:
 Content-Type: application/json
@@ -39,7 +39,7 @@ python代码示例：
 import requests
 import json
 password = ""
-url = "https://www.matesx.cn/api/confirm"
+url = "www.matesx.com/platform/api/confirm"
 headers = {
     "Content-Type": "application/json"
 }
@@ -58,16 +58,13 @@ except:
 ## 2. 上传视频文件接口
 说明: 上传文件创建数字人任务，返回任务ID和状态
 
-接口地址: POST www.matesx.cn/api/upload
+接口地址: POST www.matesx.com/platform/api/upload
 
 请求格式: multipart/form-data
 
 请求参数:
 - key: 用户密钥（必填）
-- file: 视频/图片文件（必填，支持mp4/png/jpg格式，最大30MB）
-- matting: 是否抠图（布尔值，true/false）
-- keepsize: 是否保持分辨率（布尔值，true/false）
-- reverse: 是否正反拼接视频来保证无缝循环（布尔值，true/false）
+- oss_url: 视频/图片文件url（必填，支持mp4/png/jpg格式，最大30MB）
 - task_id: 任务ID（选填，若无系统会自动生成唯一ID）
 
 响应成功示例:
@@ -83,41 +80,11 @@ except:
 ```
 
 python代码示例：
-```bash
-import requests
+请参考https://github.com/kleinlee/MatesX/blob/main/routers/auth.py用法
 
-def upload_video(password, file_path, matting=True, keepsize=False, reverse=True):
-    url = "https://www.matesx.cn/api/upload"
-
-    files = {'file': open(file_path, 'rb')}
-    data = {
-        'key': password,
-        'matting': str(matting).lower(),
-        'keepsize': str(keepsize).lower(),
-        'reverse': str(reverse).lower()
-    }
-    if callback_url:
-        data['callback_url'] = callback_url
-
-    try:
-        response = requests.post(url, files=files, data=data)
-        response.raise_for_status()
-        return response.json()
-    except Exception as e:
-        print(f"Upload failed: {e}")
-        return None
-
-# 使用示例
-result = upload_video(
-    password="your_password",
-    file_path="video.mp4",
-    matting=True,
-)
-print(result)
-```
 ## 3. 查询任务状态接口
 
-接口地址: GET www.matesx.cn/api/task/{task_id}
+接口地址: GET www.matesx.com/platform/api/task/{task_id}
 
 请求参数:
 - task_id: 任务ID
