@@ -1,6 +1,6 @@
 # 数字人API接口文档
 
-欢迎使用[matesx.cn](https://www.matesx.cn)来管理你的形象。matesx.cn为开发者提供服务，可以通过联系方式获取三个免费形象额度。
+欢迎使用[matesx.com](https://www.matesx.com/platform)来管理你的形象。matesx.cn为开发者提供服务，可以通过联系方式获取三个免费形象额度。
 
 ## 1. 获取账户信息
 说明: 通过密钥获取用户任务信息和余额
@@ -107,7 +107,7 @@ python代码示例：
 import requests
 
 def get_task_status(task_id):
-    url = f"https://www.matesx.cn/api/task/{task_id}"
+    url = f"https://www.matesx.com/platform/api/task/{task_id}"
 
     try:
         response = requests.get(url)
